@@ -758,7 +758,12 @@ the specific language governing permissions and limitations under the Apache Lic
 
             installFilteredMouseMove(this.results);
 
-            this.dropdown.on("mousemove-filtered", resultsSelector, this.bind(this.highlightUnderEvent));
+            this.dropdown.on("mousemove-filtered", resultsSelector, this.bind(function(event) {
+                if (this.opts.isMobile == false) {
+                    this.highlightUnderEvent(event);
+                }
+            }));
+
             this.dropdown.on("touchstart touchmove touchend", resultsSelector, this.bind(function (event) {
                 this._touchEvent = true;
                 this.highlightUnderEvent(event);
@@ -768,11 +773,13 @@ the specific language governing permissions and limitations under the Apache Lic
 
             // Waiting for a click event on touch devices to select option and hide dropdown
             // otherwise click will be triggered on an underlying element
-            this.dropdown.on('click', this.bind(function (event) {
+            this.dropdown.on('click', this.bind(function (e) {
+
                 if (this._touchEvent) {
                     this._touchEvent = false;
                     this.selectHighlighted();
                 }
+
             }));
 
             installDebouncedScroll(80, this.results);
@@ -802,9 +809,11 @@ the specific language governing permissions and limitations under the Apache Lic
             search.on("blur", function () { search.removeClass("select2-focused");});
 
             this.dropdown.on("mousedown", resultsSelector, this.bind(function (e) {
-                if ($(e.target).closest(".select2-result-selectable").length > 0) {
-                    this.highlightUnderEvent(e);
-                    this.selectHighlighted(e);
+                if (this.opts.isMobile == false) {
+                    if ($(e.target).closest(".select2-result-selectable").length > 0) {
+                        this.highlightUnderEvent(e);
+                        this.selectHighlighted(e);
+                    }
                 }
             }));
 
@@ -2259,7 +2268,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 killEvent(e);
             }));
 
-            dropdown.on("mousedown touchstart", this.bind(function() {
+            dropdown.on("mousedown touchstart", this.bind(function() {           ;
                 if (this.opts.shouldFocusInput(this)) {
                     this.search.focus();
                 }
